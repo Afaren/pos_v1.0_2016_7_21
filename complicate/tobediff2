@@ -1,4 +1,0 @@
-[ Object({ barcode: 'ITEM000001', amount: 1 }),
-Object({ barcode: 'ITEM000003', amount: 2.5 }),
-Object({ barcode: 'ITEM000005', amount: 1 }),
-Object({ barcode: 'ITEM000005', amount: 2 }) ].

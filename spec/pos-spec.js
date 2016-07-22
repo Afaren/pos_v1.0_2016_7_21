@@ -1,89 +1,16 @@
-'use strict';
-
 /**
  * Created by afaren on 7/21/16.
  */
-describe('pos', function () {
-
-  describe('should get barcode amount list', function () {
-    it('by format tags in first step', function () {
-      const tags = [
-        'ITEM000001',
-        'ITEM000003-2.5',
-        'ITEM000005',
-        'ITEM000005-2',
-      ];
-      let actual = formatTags(tags);
-
-      let expected = [
-        {
-          barcode: 'ITEM000001',
-          amount: 1
-        },
-        {
-          barcode: 'ITEM000003',
-          amount: 2.5
-        },
-        {
-          barcode: 'ITEM000005',
-          amount: 1
-        },
-        {
-          barcode: 'ITEM000005',
-          amount: 2
-        }
-      ];
-      expect(actual).toEqual(expected); // cannot use toBe()
-    });
-    it('by merge barcodes in second step', function () {
-      let formattedTags = [
-        {
-          barcode: 'ITEM000001',
-          amount: 1
-        },
-        {
-          barcode: 'ITEM000003',
-          amount: 2.5
-        },
-        {
-          barcode: 'ITEM000005',
-          amount: 1
-        },
-        {
-          barcode: 'ITEM000005',
-          amount: 2
-        }
-      ];
-
-      let actual = mergeBarcode(formattedTags);
-      let expected = [
-        {
-          barcode: 'ITEM000001',
-          amount: 1
-        },
-        {
-          barcode: 'ITEM000003',
-          amount: 2.5
-        },
-        {
-          barcode: 'ITEM000005',
-          amount: 3
-        }
-      ];
 
 
-      expect(actual).toEqual(expected);
-    });
-  });
+'use strict';
 
-
+describe('getPromotingInfo', () => {
   it('should get promoting barcodes information', function () {
-
     let expected = [
       {
         barcode: 'ITEM000001',
         type: 'BUY_TWO_GET_ONE_FREE'
-
       },
       {
         barcode: 'ITEM000005',
@@ -107,45 +34,68 @@ describe('pos', function () {
     ];
 
     let actual = getPromotingInfo(barcodeAmountList, loadPromotions());
-    // console.log(JSON.stringify(actual, null, 2));
 
     expect(actual).toEqual(expected);
 
   });
+});
 
-  it('should get originSubTotalCartItems', ()=> {
+describe('getBarcodeAmountList',  () => {
+  it('format tags in first step', function () {
+    const tags = [
+      'ITEM000001',
+      'ITEM000003-2.5',
+      'ITEM000005',
+      'ITEM000005-2',
+    ];
+    let actual = formatTags(tags);
+
     let expected = [
       {
         barcode: 'ITEM000001',
-        name: '雪碧',
-        unit: '瓶',
-        price: 3.00,
-        amount: 5,
-        originSubTotal: 15.00
+        amount: 1
       },
       {
         barcode: 'ITEM000003',
-        name: '荔枝',
-        unit: '斤',
-        price: 15.00,
-        amount: 2.5,
-        originSubTotal: 37.50
-      }
-      ,
+        amount: 2.5
+      },
       {
         barcode: 'ITEM000005',
-        name: '方便面',
-        unit: '袋',
-        price: 4.50,
-        amount: 3,
-        originSubTotal: 13.50
+        amount: 1
+      },
+      {
+        barcode: 'ITEM000005',
+        amount: 2
+      }
+    ];
+    expect(actual).toEqual(expected); // cannot use toBe()
+  });
+
+  it('merge barcodes in second step', function () {
+    let formattedTags = [
+      {
+        barcode: 'ITEM000001',
+        amount: 1
+      },
+      {
+        barcode: 'ITEM000003',
+        amount: 2.5
+      },
+      {
+        barcode: 'ITEM000005',
+        amount: 1
+      },
+      {
+        barcode: 'ITEM000005',
+        amount: 2
       }
     ];
 
-    let barcodeAmountList = [
+    let actual = mergeBarcodes(formattedTags);
+    let expected = [
       {
         barcode: 'ITEM000001',
-        amount: 5
+        amount: 1
       },
       {
         barcode: 'ITEM000003',
@@ -155,12 +105,15 @@ describe('pos', function () {
         barcode: 'ITEM000005',
         amount: 3
       }
-
     ];
 
-    let actual = calculateOriginSubTotalCartItems(barcodeAmountList, loadAllItems());
     expect(actual).toEqual(expected);
   });
+
+});
+
+describe('calculateSubTotalCartItems', () => {
+
   it('should get discountedSubTotalCartItems', ()=> {
     let expected = [
       {
@@ -237,6 +190,61 @@ describe('pos', function () {
     expect(actual).toEqual(expected);
   });
 
+});
+
+describe('calculateOriginSubTotalCartItems', () => {
+  it('should get originSubTotalCartItems', ()=> {
+    let expected = [
+      {
+        barcode: 'ITEM000001',
+        name: '雪碧',
+        unit: '瓶',
+        price: 3.00,
+        amount: 5,
+        originSubTotal: 15.00
+      },
+      {
+        barcode: 'ITEM000003',
+        name: '荔枝',
+        unit: '斤',
+        price: 15.00,
+        amount: 2.5,
+        originSubTotal: 37.50
+      }
+      ,
+      {
+        barcode: 'ITEM000005',
+        name: '方便面',
+        unit: '袋',
+        price: 4.50,
+        amount: 3,
+        originSubTotal: 13.50
+      }
+    ];
+
+    let barcodeAmountList = [
+      {
+        barcode: 'ITEM000001',
+        amount: 5
+      },
+      {
+        barcode: 'ITEM000003',
+        amount: 2.5
+      },
+      {
+        barcode: 'ITEM000005',
+        amount: 3
+      }
+
+    ];
+
+    let actual = calculateOriginSubTotalCartItems(barcodeAmountList, loadAllItems());
+    expect(actual).toEqual(expected);
+  });
+
+});
+
+describe('calculateOriginTotalPrice', () => {
   it('should get origin total price', function () {
 
     let discountedSubTotalCartItems = [
@@ -275,6 +283,9 @@ describe('pos', function () {
 
   });
 
+});
+
+describe('calculateDiscountPrice', () => {
   it('should get discount', function () {
     let discountedSubTotalCartItems = [
       {
@@ -313,6 +324,9 @@ describe('pos', function () {
     expect(discount).toEqual(expected);
   });
 
+});
+
+describe('pos', () => {
 
   it('should print correct receipt text', function () {
     const tags = [
@@ -343,4 +357,5 @@ describe('pos', function () {
     expect(console.log).toHaveBeenCalledWith(expectText);
 
   })
+
 });
